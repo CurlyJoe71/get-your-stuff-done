@@ -1,11 +1,18 @@
-import { Button } from '@mui/material';
 import React from 'react';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import TaskList from './TaskList';
 
 const Home = () => {
     return (
-        <div>
-            <Button>Test Button</Button>
-        </div>
+        <Grid container>
+            <Grid item>
+                <Button>Test Button</Button>
+            </Grid>
+            <Grid item>
+                <TaskList />
+            </Grid>
+        </Grid>
     )
 };
 

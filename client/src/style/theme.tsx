@@ -2,12 +2,15 @@ import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
   palette: {
-    mode: 'dark',
+    // mode: 'dark',
     primary: {
       main: '#cce656',
     },
     secondary: {
       main: '#f35e78',
+    },
+    background: {
+      default: '#e0e0e0',
     },
   },
   typography: {
@@ -28,7 +31,7 @@ const theme = createTheme({
       fontFamily: '"Montserrat", "Helvetica", "Arial", sans-serif',
     },
     h6: {
-      fontFamily: '"Montserrat", "Helvetica", "Arial", sans-serif',
+      fontFamily: '"Montserrat"'
     },
     body1: {
       fontFamily: '"Mulish", "Helvetica", "Arial", sans-serif',
