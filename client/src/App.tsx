@@ -1,14 +1,22 @@
 import React from 'react';
-import logo from './logo.svg';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
-import theme from '../style/theme';
+import theme from './style/theme';
+import Home from './components/Home';
+import HeaderBar from './components/HeaderBar';
 // import './App.css';
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
-        <header className="App-header">
+        <HeaderBar />
+        <BrowserRouter>
+          <Routes>
+            <Route index element={<Home />} />
+          </Routes>
+        </BrowserRouter>
+        {/* <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <p>
             Edit <code>src/App.tsx</code> and save to reload.
@@ -21,7 +29,7 @@ function App() {
           >
             Learn React
           </a>
-        </header>
+        </header> */}
       </div>
     </ThemeProvider>
   );
