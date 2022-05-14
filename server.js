@@ -1,11 +1,8 @@
 const express = require('express');
 const app = express();
-const exphbs = require('express-handlebars');
 const path = require('path');
 const bodyParser = require('body-parser');
 const routes = require("./routes");
-const morgan = require('morgan');
-const winston = require('./winston/config');
 
 const port = 7581;
 
