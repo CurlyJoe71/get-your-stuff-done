@@ -27,24 +27,24 @@ const TaskList = () => {
             title: 'Task 2 title',
             dateCreated: '2022-05-13T18:00:00.000Z',
             id: '02',
-            category: null
+            category: ''
         }
     ]);
     const [modalOpen, setModalOpen] = useState(false);
-    const currTask = useRef({});
+    const [currTask, setCurrTask] = useState({ title: '', category: '', complete: false, dateCreated: '', id: '' });
 
-    const handleModalOpen = (id: string) => {
+    const handleEditClick = (id: string) => {
         console.log(id);
         console.log('clicked handlemodal open');
-        const currentTask = data.map(d => {
+        data.map(d => {
             if (d.id === id) {
-                currTask.current = d;
+                setCurrTask(d);
             };
-        })
+        });
         setModalOpen(true);
     };
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const handleCheckChange = (event: ChangeEvent<HTMLInputElement>) => {
         const checked = event.target.checked;
         const taskId = event.target.getAttribute('id');
         let updatedData = data.map(d => {
@@ -56,7 +56,15 @@ const TaskList = () => {
             return task;
         })
         setData(updatedData);
-    }
+    };
+
+    const handleTitleChange = (value: string) => {
+        let task = currTask;
+        const newDate = new Date().toISOString();
+        task.title = value;
+        task.dateCreated = newDate;
+        setCurrTask(task);
+    };
 
     return (
         <>
@@ -64,7 +72,8 @@ const TaskList = () => {
                 <EditModal
                     open={modalOpen}
                     handleClose={setModalOpen}
-                    data={currTask.current}
+                    data={currTask}
+                    handleChange={handleTitleChange}
                 /> : null
             }
             <Grid container xl>
@@ -75,11 +84,9 @@ const TaskList = () => {
                                 return (
                                     <ListItem key={t.id}>
                                         <Grid container direction='row'>
-
                                             <Grid item xs={2}>
-                                                <Checkbox checked={t.complete} onChange={handleChange} id={t.id} />
+                                                <Checkbox checked={t.complete} onChange={handleCheckChange} id={t.id} />
                                             </Grid>
-
                                             <Grid item container direction='column' xs={8}>
                                                 <Grid item color={t.complete ? 'text.secondary' : 'inherit'}>
                                                     <Typography variant='body1'>
@@ -95,10 +102,9 @@ const TaskList = () => {
                                                     </Typography>
                                                 </Grid>
                                             </Grid>
-
                                             <Grid item xs={2} >
                                                 <Tooltip title='Edit task'>
-                                                    <Button size='small' onClick={() => handleModalOpen(t.id)}>
+                                                    <Button size='small' onClick={() => handleEditClick(t.id)}>
                                                         <EditIcon fontSize='small' />
                                                     </Button>
                                                 </Tooltip>
