@@ -14,7 +14,6 @@ const EditModal = (props: { open: boolean, handleChange: any, handleClose: any, 
     };
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        console.log(value);
         const updatedData = { ...data }.title = value;
         setData(updatedData);
         props.handleChange(value);

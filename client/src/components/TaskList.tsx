@@ -1,6 +1,5 @@
-import React, { ChangeEvent, useRef, useState, MouseEventHandler, MouseEvent } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import List from '@mui/material/List';
@@ -94,9 +93,10 @@ const TaskList = () => {
                                                     </Typography>
                                                 </Grid>
                                                 <Grid item color={t.complete ? 'text.secondary' : 'inherit'}>
-                                                    <Typography variant='caption'>
+                                                    {/* TODO: Add categorizing feature */}
+                                                    {/* <Typography variant='caption'>
                                                         {t.category ? `${t.category} - ` : null}
-                                                    </Typography>
+                                                    </Typography> */}
                                                     <Typography variant='caption'>
                                                         {formatDate(t.dateCreated)}
                                                     </Typography>
