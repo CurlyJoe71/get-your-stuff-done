@@ -12,6 +12,9 @@ const theme = createTheme({
     background: {
       default: '#e0e0e0',
     },
+    text: {
+      secondary: 'rgba(123,121,121,0.78)',
+    },
   },
   typography: {
     h1: {

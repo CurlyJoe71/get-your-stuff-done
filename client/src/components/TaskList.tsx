@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useRef, useState, MouseEventHandler, MouseEvent } from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -10,6 +10,8 @@ import formatDate from '../utils/dateFormatter';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Tooltip from '@mui/material/Tooltip';
+import Button from '@mui/material/Button';
+import EditModal from './EditModal';
 
 const TaskList = () => {
     const [data, setData] = useState([
@@ -28,6 +30,19 @@ const TaskList = () => {
             category: null
         }
     ]);
+    const [modalOpen, setModalOpen] = useState(false);
+    const currTask = useRef({});
+
+    const handleModalOpen = (id: string) => {
+        console.log(id);
+        console.log('clicked handlemodal open');
+        const currentTask = data.map(d => {
+            if (d.id === id) {
+                currTask.current = d;
+            };
+        })
+        setModalOpen(true);
+    };
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const checked = event.target.checked;
@@ -44,53 +59,64 @@ const TaskList = () => {
     }
 
     return (
-        // <Box sx={{ flexGrow: 1 }}>
-        <Grid container xl>
-            <Paper sx={{ width: 500 }}>
-                <Grid item xs={12}>
-                    <List>
-                        {data.map(t => {
-                            return (
-                                <ListItem key={t.id}>
-                                    <Grid container direction='row'>
+        <>
+            {modalOpen ?
+                <EditModal
+                    open={modalOpen}
+                    handleClose={setModalOpen}
+                    data={currTask.current}
+                /> : null
+            }
+            <Grid container xl>
+                <Paper sx={{ width: 500 }}>
+                    <Grid item xs={12}>
+                        <List>
+                            {data.map(t => {
+                                return (
+                                    <ListItem key={t.id}>
+                                        <Grid container direction='row'>
 
-                                        <Grid item xs={2}>
-                                            <Checkbox checked={t.complete} onChange={handleChange} id={t.id} />
-                                        </Grid>
-
-                                        <Grid item container direction='column' xs={8}>
-                                            <Grid item>
-                                                <Typography variant='body1'>
-                                                    {t.title}
-                                                </Typography>
+                                            <Grid item xs={2}>
+                                                <Checkbox checked={t.complete} onChange={handleChange} id={t.id} />
                                             </Grid>
-                                            <Grid item>
-                                                <Typography variant='caption'>
-                                                    {t.category ? `${t.category} - ` : null}
-                                                </Typography>
-                                                <Typography variant='caption'>
-                                                    {formatDate(t.dateCreated)}
-                                                </Typography>
+
+                                            <Grid item container direction='column' xs={8}>
+                                                <Grid item color={t.complete ? 'text.secondary' : 'inherit'}>
+                                                    <Typography variant='body1'>
+                                                        {t.title}
+                                                    </Typography>
+                                                </Grid>
+                                                <Grid item color={t.complete ? 'text.secondary' : 'inherit'}>
+                                                    <Typography variant='caption'>
+                                                        {t.category ? `${t.category} - ` : null}
+                                                    </Typography>
+                                                    <Typography variant='caption'>
+                                                        {formatDate(t.dateCreated)}
+                                                    </Typography>
+                                                </Grid>
+                                            </Grid>
+
+                                            <Grid item xs={2} >
+                                                <Tooltip title='Edit task'>
+                                                    <Button size='small' onClick={() => handleModalOpen(t.id)}>
+                                                        <EditIcon fontSize='small' />
+                                                    </Button>
+                                                </Tooltip>
+                                                <Tooltip title='Delete task'>
+                                                    <Button size='small'>
+                                                        <DeleteIcon fontSize='small' />
+                                                    </Button>
+                                                </Tooltip>
                                             </Grid>
                                         </Grid>
-
-                                        <Grid item xs={2} display='flex' justifyContent='space-evenly'>
-                                            <Tooltip title='Edit task'>
-                                                <EditIcon fontSize='small' />
-                                            </Tooltip>
-                                            <Tooltip title='Delete task'>
-                                                <DeleteIcon fontSize='small' />
-                                            </Tooltip>
-                                        </Grid>
-                                    </Grid>
-                                </ListItem>
-                            )
-                        })}
-                    </List>
-                </Grid>
-            </Paper>
-        </Grid>
-        // </Box>
+                                    </ListItem>
+                                )
+                            })}
+                        </List>
+                    </Grid>
+                </Paper>
+            </Grid>
+        </>
     )
 }
 
