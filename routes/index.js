@@ -1,8 +1,6 @@
 const router = require('express').Router();
-// const dbRoutes = require('./api/database');
-const testRoutes = require('./test');
+const taskRoutes = require('./tasks');
 
-// router.use('/api', dbRoutes);
-router.use('/test', testRoutes);
+router.use('/tasks', taskRoutes);
 
 module.exports = router;

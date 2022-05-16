@@ -6,39 +6,63 @@ import Modal from '@mui/material/Modal';
 import modalStyle from '../style/modal';
 import TextField from '@mui/material/TextField';
 import TaskModel from '../models/TaskModel';
+import Button from '@mui/material/Button';
+import { v4 as uuid } from 'uuid';
 
-const EditModal = (props: { open: boolean, handleChange: any, handleClose: any, data: TaskModel }) => {
+const newId = uuid();
+let dt = new Date();
+let localDt = dt.toLocaleString('en-US', { timeZone: 'US/Arizona' });
+
+const blankTask: TaskModel = {
+    date_created: new Date().toISOString(),
+    id: 0,
+    task_id: newId,
+    title: '',
+    category: 'Home',
+    user_id: 111,
+    complete: false
+};
+
+const AddModal = (props: { open: boolean, handleSave: any, handleClose: any }) => {
     const [open] = useState(props.open);
-    const [data, setData] = useState(props.data);
-    const handleClose = () => {
-        props.handleClose(false);
-    };
+    const [task, setTask] = useState(blankTask);
+
+    // const handleClose = () => {
+    //     props.handleClose(false);
+    // };
+
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        const updatedData = { ...data }
+        const updatedData = { ...task };
         updatedData.title = value;
-        setData(updatedData);
-        props.handleChange(value);
+        setTask(updatedData);
     };
+
+    const handleSaveTask = () => {
+        props.handleSave(task);
+    }
 
     return (
         <Modal
             open={open}
-            onClose={handleClose}
+            onClose={props.handleClose}
         >
             <Box sx={modalStyle}>
                 <Grid container direction='column' spacing={2}>
                     <Grid item>
-                        <Typography variant="h5">Edit task...</Typography>
+                        <Typography variant="h5">What's the new task?</Typography>
                     </Grid>
                     <Grid item>
                         <TextField
                             label='Task description'
                             multiline
                             rows={4}
-                            value={data.title}
+                            value={task.title}
                             onChange={handleChange}
                         />
+                    </Grid>
+                    <Grid item>
+                        <Button onClick={handleSaveTask}>Save</Button>
                     </Grid>
                 </Grid>
             </Box>
@@ -46,4 +70,4 @@ const EditModal = (props: { open: boolean, handleChange: any, handleClose: any, 
     )
 };
 
-export default EditModal;
+export default AddModal;

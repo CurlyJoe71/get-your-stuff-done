@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -11,111 +11,148 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Tooltip from '@mui/material/Tooltip';
 import Button from '@mui/material/Button';
 import EditModal from './EditModal';
+import API from '../utils/API';
+import Divider from '@mui/material/Divider';
+import TaskModel from '../models/TaskModel';
+import ArchiveModal from './DeleteModal';
 
-const TaskList = () => {
-    const [data, setData] = useState([
-        {
-            complete: true,
-            title: 'Task 1 title/description extra long title description to see what will happen',
-            dateCreated: '2022-05-13T19:00:00.000Z',
-            id: '01',
-            category: 'Home'
-        },
-        {
-            complete: false,
-            title: 'Task 2 title',
-            dateCreated: '2022-05-13T18:00:00.000Z',
-            id: '02',
-            category: ''
-        }
-    ]);
-    const [modalOpen, setModalOpen] = useState(false);
-    const [currTask, setCurrTask] = useState({ title: '', category: '', complete: false, dateCreated: '', id: '' });
+const TaskList = (props: { data: Array<TaskModel>, onChange: any }) => {
+    const [tasks, setTasks] = useState<TaskModel[]>(props.data);
+    const [editModalOpen, setEditModalOpen] = useState<boolean>(false);
+    const [archiveModalOpen, setArchiveModalOpen] = useState<boolean>(false);
+    const [currTask, setCurrTask] = useState<TaskModel>({
+        id: 0,
+        task_id: 'id',
+        user_id: 0,
+        title: '',
+        category: '',
+        complete: false,
+        date_created: ''
+    });
+
+    useEffect(() => {
+        setTasks(props.data);
+    }, [props.data]);
 
     const handleEditClick = (id: string) => {
-        console.log(id);
-        console.log('clicked handlemodal open');
-        data.map(d => {
-            if (d.id === id) {
+        tasks.map(d => {
+            if (d.task_id === id) {
                 setCurrTask(d);
             };
         });
-        setModalOpen(true);
+        setEditModalOpen(true);
+    };
+
+    const handleArchiveClick = (id: string) => {
+        tasks.map(d => {
+            if (d.task_id === id) {
+                setCurrTask(d);
+            };
+        });
+        setArchiveModalOpen(true);
     };
 
     const handleCheckChange = (event: ChangeEvent<HTMLInputElement>) => {
         const checked = event.target.checked;
         const taskId = event.target.getAttribute('id');
-        let updatedData = data.map(d => {
+        let updatedData = tasks.map(d => {
             let task = { ...d };
 
-            if (task.id === taskId) {
+            if (task.task_id === taskId) {
                 task.complete = checked;
+                API.updateTask(task);
+                props.onChange(task);
             };
             return task;
         })
-        setData(updatedData);
+        setTasks(updatedData);
     };
 
     const handleTitleChange = (value: string) => {
-        let task = currTask;
+        let task: TaskModel = currTask;
         const newDate = new Date().toISOString();
         task.title = value;
-        task.dateCreated = newDate;
+        task.date_created = newDate;
+        API.updateTask(task);
         setCurrTask(task);
     };
 
+    const handleArchive = (task: TaskModel) => {
+        let updatedTasks = [...tasks];
+        const index = updatedTasks.indexOf(task);
+        if (index > -1) {
+            updatedTasks.splice(index, 1);
+        };
+        API.archiveTask(task);
+        setTasks(updatedTasks);
+        setArchiveModalOpen(false);
+    };
+
+
     return (
         <>
-            {modalOpen ?
+            {editModalOpen ?
                 <EditModal
-                    open={modalOpen}
-                    handleClose={setModalOpen}
+                    open={editModalOpen}
                     data={currTask}
+                    handleClose={setEditModalOpen}
                     handleChange={handleTitleChange}
                 /> : null
             }
+
+            {archiveModalOpen ?
+                <ArchiveModal
+                    open={archiveModalOpen}
+                    data={currTask}
+                    handleArchive={handleArchive}
+                    handleClose={() => setArchiveModalOpen(false)}
+                /> : null
+            }
+
             <Grid container xl>
-                <Paper sx={{ width: 500 }}>
+                <Paper sx={{ width: 600 }}>
                     <Grid item xs={12}>
                         <List>
-                            {data.map(t => {
+                            {tasks.map(t => {
                                 return (
-                                    <ListItem key={t.id}>
-                                        <Grid container direction='row'>
-                                            <Grid item xs={2}>
-                                                <Checkbox checked={t.complete} onChange={handleCheckChange} id={t.id} />
-                                            </Grid>
-                                            <Grid item container direction='column' xs={8}>
-                                                <Grid item color={t.complete ? 'text.secondary' : 'inherit'}>
-                                                    <Typography variant='body1'>
-                                                        {t.title}
-                                                    </Typography>
+                                    <div key={t.task_id}>
+                                        <ListItem>
+                                            <Grid container direction='row'>
+                                                <Grid item xs={2}>
+                                                    <Checkbox checked={t.complete} onChange={handleCheckChange} id={t.task_id} />
                                                 </Grid>
-                                                <Grid item color={t.complete ? 'text.secondary' : 'inherit'}>
-                                                    {/* TODO: Add categorizing feature */}
-                                                    {/* <Typography variant='caption'>
+                                                <Grid item container direction='column' xs={8}>
+                                                    <Grid item color={t.complete ? 'text.secondary' : 'inherit'}>
+                                                        <Typography variant='body1'>
+                                                            {t.title}
+                                                        </Typography>
+                                                    </Grid>
+                                                    <Grid item color={t.complete ? 'text.secondary' : 'inherit'}>
+                                                        {/* TODO: Add categorizing feature */}
+                                                        {/* <Typography variant='caption'>
                                                         {t.category ? `${t.category} - ` : null}
                                                     </Typography> */}
-                                                    <Typography variant='caption'>
-                                                        {formatDate(t.dateCreated)}
-                                                    </Typography>
+                                                        <Typography variant='caption'>
+                                                            {formatDate(t.date_created)}
+                                                        </Typography>
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid item xs={2} >
+                                                    <Tooltip title='Edit task'>
+                                                        <Button size='small' onClick={() => handleEditClick(t.task_id)}>
+                                                            <EditIcon fontSize='small' />
+                                                        </Button>
+                                                    </Tooltip>
+                                                    <Tooltip title='Archive task'>
+                                                        <Button size='small' onClick={() => handleArchiveClick(t.task_id)}>
+                                                            <DeleteIcon fontSize='small' />
+                                                        </Button>
+                                                    </Tooltip>
                                                 </Grid>
                                             </Grid>
-                                            <Grid item xs={2} >
-                                                <Tooltip title='Edit task'>
-                                                    <Button size='small' onClick={() => handleEditClick(t.id)}>
-                                                        <EditIcon fontSize='small' />
-                                                    </Button>
-                                                </Tooltip>
-                                                <Tooltip title='Delete task'>
-                                                    <Button size='small'>
-                                                        <DeleteIcon fontSize='small' />
-                                                    </Button>
-                                                </Tooltip>
-                                            </Grid>
-                                        </Grid>
-                                    </ListItem>
+                                        </ListItem>
+                                        <Divider />
+                                    </div>
                                 )
                             })}
                         </List>
