@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../../db/pg');
-const { randomUUID } = require('crypto');
 
 router.get('/', (req, res) => {
     console.log("[GET] all tasks");

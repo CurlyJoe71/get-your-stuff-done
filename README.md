@@ -33,6 +33,8 @@ Here are some additional technical issues that will be addressed in future relea
 1. Components will be extracted into a separate library.
 2. Unit testing will be included in deployment process.
 3. Expansion of database schema - additional tables will be needed to manage users and categories.
+4. Cleaner express routing
+5. Custom ORM
 
 ## History
 
